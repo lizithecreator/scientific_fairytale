@@ -157,6 +157,22 @@ def edit_story(story_id):
 
     return render_template('edit_story.html', form=form, story=story)
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        # აქ უნდა დაამატო პაროლის ჰაშირება, ეს მხოლოდ მაგალითია
+        new_user = User(username=form.username.data, password=form.password.data)
+        try:
+            db.session.add(new_user)
+            db.session.commit()
+            flash('რეგისტრაცია წარმატებით დასრულდა!', 'success')
+            return redirect(url_for('login'))  # ან სხვა გვერდი
+        except Exception as e:
+            db.session.rollback()
+            flash('მომხმარებელი უკვე არსებობს ან მოხდა სხვა შეცდომა.', 'danger')
+    return render_template('signup.html', form=form)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
